@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中文听写 | Chinese Dictation Practice</title>
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-mark">听</span>
+        <div class="brand-text">
+          <h1>中文听写</h1>
+          <p>Chinese Dictation Practice</p>
+        </div>
+      </div>
+      <nav class="stats-nav">
+        <div class="stat">
+          <span class="stat-value" id="statCorrect">0</span>
+          <span class="stat-label">Correct</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="statAttempted">0</span>
+          <span class="stat-label">Attempted</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value" id="statAccuracy">--%</span>
+          <span class="stat-label">Accuracy</span>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="level-select" aria-label="HSK level selection">
+      <span class="level-select-label">Level:</span>
+      <div class="level-tabs" id="levelTabs">
+        <button class="level-tab active" data-level="1">HSK 1</button>
+        <button class="level-tab" data-level="2">HSK 2</button>
+        <button class="level-tab" data-level="3">HSK 3</button>
+        <button class="level-tab" data-level="4">HSK 4</button>
+        <button class="level-tab" data-level="5">HSK 5</button>
+        <button class="level-tab" data-level="6">HSK 6</button>
+      </div>
+    </section>
+
+    <section class="practice-card">
+      <div class="card-top">
+        <span class="progress-label">Sentence <span id="currentIndex">1</span> / <span id="totalCount">10</span></span>
+        <div class="speed-control">
+          <label for="speedRange">Speed</label>
+          <input type="range" id="speedRange" min="0.5" max="1.2" step="0.1" value="0.9">
+          <span id="speedValue">0.9x</span>
+        </div>
+      </div>
+
+      <div class="audio-controls">
+        <button id="playBtn" class="btn btn-play" title="Play audio">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button id="replayBtn" class="btn btn-icon" title="Replay">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+        </button>
+        <span class="play-count" id="playCount">Played 0 times</span>
+        <span class="voice-warning" id="voiceWarning" hidden>⚠ No Chinese voice found in your browser. Try Chrome, or install a Chinese TTS voice.</span>
+      </div>
+
+      <div class="input-area">
+        <textarea id="userInput" rows="3" placeholder="在这里输入你听到的中文… (Type what you hear here)" lang="zh"></textarea>
+      </div>
+
+      <div class="action-row">
+        <button id="checkBtn" class="btn btn-primary">Check 检查</button>
+        <button id="hintBtn" class="btn btn-secondary">Hint 提示</button>
+        <button id="pinyinBtn" class="btn btn-secondary">Show Pinyin</button>
+        <button id="answerBtn" class="btn btn-secondary">Show Answer</button>
+        <button id="nextBtn" class="btn btn-secondary">Next →</button>
+      </div>
+
+      <div class="feedback" id="feedback" hidden>
+        <div class="feedback-diff" id="feedbackDiff"></div>
+        <div class="feedback-meta">
+          <span id="feedbackScore"></span>
+        </div>
+        <div class="feedback-pinyin" id="feedbackPinyin" hidden></div>
+        <div class="feedback-english" id="feedbackEnglish" hidden></div>
+      </div>
+    </section>
+
+    <section class="legend">
+      <span class="legend-item"><i class="swatch correct"></i> Correct</span>
+      <span class="legend-item"><i class="swatch wrong"></i> Incorrect</span>
+      <span class="legend-item"><i class="swatch missing"></i> Missing</span>
+      <span class="legend-item"><i class="swatch extra"></i> Extra</span>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Practice Chinese listening &amp; typing by ear. Audio is generated locally in your browser using the Web Speech API — no sign-up required.</p>
+  </footer>
+
+  <script src="data/sentences.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

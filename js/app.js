@@ -34,7 +34,10 @@
     feedbackEnglish: document.getElementById("feedbackEnglish"),
     statCorrect: document.getElementById("statCorrect"),
     statAttempted: document.getElementById("statAttempted"),
-    statAccuracy: document.getElementById("statAccuracy")
+    statAccuracy: document.getElementById("statAccuracy"),
+    accuracyRing: document.getElementById("accuracyRing"),
+    themeToggle: document.getElementById("themeToggle"),
+    celebrate: document.getElementById("celebrate")
   };
 
   function loadStats() {
@@ -65,7 +68,7 @@
   function speak(text) {
     if (!("speechSynthesis" in window)) {
       el.voiceWarning.hidden = false;
-      el.voiceWarning.textContent = "⚠ Your browser does not support speech synthesis. Try Chrome or Edge.";
+      el.voiceWarning.textContent = "⚠ Trình duyệt của bạn không hỗ trợ đọc giọng nói. Hãy thử Chrome hoặc Edge.";
       return;
     }
     window.speechSynthesis.cancel();
@@ -79,18 +82,19 @@
   function playCurrent() {
     speak(currentSentence().hanzi);
     state.playCount += 1;
-    el.playCount.textContent = "Played " + state.playCount + (state.playCount === 1 ? " time" : " times");
+    el.playCount.textContent = "Đã nghe " + state.playCount + " lần";
   }
 
   function resetForNewSentence() {
     state.playCount = 0;
     state.hintChars = 0;
     state.checked = false;
-    el.playCount.textContent = "Played 0 times";
+    el.playCount.textContent = "Đã nghe 0 lần";
     el.userInput.value = "";
     el.feedback.hidden = true;
     el.feedbackPinyin.hidden = true;
     el.feedbackEnglish.hidden = true;
+    el.celebrate.hidden = true;
     el.currentIndex.textContent = state.index + 1;
     el.totalCount.textContent = SENTENCE_BANK[state.level].length;
     el.userInput.focus();
@@ -154,8 +158,9 @@
     const { parts, correctCount, total } = diffChars(target, input);
     renderDiff(parts);
     const pct = Math.round((correctCount / total) * 100);
-    el.feedbackScore.textContent = `${correctCount} / ${total} characters correct (${pct}%)`;
+    el.feedbackScore.textContent = `${correctCount} / ${total} ký tự đúng (${pct}%)`;
     el.feedback.hidden = false;
+    el.celebrate.hidden = pct !== 100;
 
     if (!state.checked) {
       state.checked = true;
@@ -175,7 +180,7 @@
   function showAnswer() {
     const s = currentSentence();
     renderDiff([...s.hanzi].map(ch => ({ ch, cls: "correct" })));
-    el.feedbackScore.textContent = "Answer revealed";
+    el.feedbackScore.textContent = "Đã hiển thị đáp án";
     el.feedbackPinyin.textContent = s.pinyin;
     el.feedbackPinyin.hidden = false;
     el.feedbackEnglish.textContent = s.english;
@@ -196,9 +201,32 @@
   function updateStatsUI() {
     el.statCorrect.textContent = state.stats.correct;
     el.statAttempted.textContent = state.stats.attempted;
-    el.statAccuracy.textContent = state.stats.attempted
-      ? Math.round((state.stats.correct / state.stats.attempted) * 100) + "%"
-      : "--%";
+    const pct = state.stats.attempted
+      ? Math.round((state.stats.correct / state.stats.attempted) * 100)
+      : 0;
+    el.statAccuracy.textContent = state.stats.attempted ? pct + "%" : "--%";
+    el.accuracyRing.style.setProperty("--pct", pct);
+  }
+
+  function loadTheme() {
+    let theme = "light";
+    try {
+      theme = localStorage.getItem("dictation-theme") || "light";
+    } catch (e) { /* ignore */ }
+    applyTheme(theme);
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    el.themeToggle.textContent = theme === "dark" ? "☀️" : "🌙";
+    try {
+      localStorage.setItem("dictation-theme", theme);
+    } catch (e) { /* ignore */ }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme") || "light";
+    applyTheme(current === "dark" ? "light" : "dark");
   }
 
   function bindEvents() {
@@ -231,9 +259,12 @@
     if ("speechSynthesis" in window) {
       window.speechSynthesis.onvoiceschanged = pickVoice;
     }
+
+    el.themeToggle.addEventListener("click", toggleTheme);
   }
 
   function init() {
+    loadTheme();
     bindEvents();
     pickVoice();
     updateStatsUI();

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中文听写 | Chinese Dictation Practice</title>
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="blob blob-a" aria-hidden="true"></div>
+  <div class="blob blob-b" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="brand-mark">听</span>
+        <div class="brand-text">
+          <h1>中文听写</h1>
+          <p>Chinese Dictation Practice</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <nav class="stats-nav">
+          <div class="stat">
+            <span class="stat-value" id="statCorrect">0</span>
+            <span class="stat-label">Đúng</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value" id="statAttempted">0</span>
+            <span class="stat-label">Đã làm</span>
+          </div>
+          <div class="stat stat-ring">
+            <div class="ring" id="accuracyRing" style="--pct:0;">
+              <span id="statAccuracy">--%</span>
+            </div>
+            <span class="stat-label">Chính xác</span>
+          </div>
+        </nav>
+        <button id="themeToggle" class="theme-toggle" title="Đổi giao diện sáng/tối">🌙</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="level-select" aria-label="HSK level selection">
+      <span class="level-select-label">Chọn cấp độ</span>
+      <div class="level-tabs" id="levelTabs">
+        <button class="level-tab lv1 active" data-level="1"><span class="lv-emoji">🌱</span>HSK 1</button>
+        <button class="level-tab lv2" data-level="2"><span class="lv-emoji">🌿</span>HSK 2</button>
+        <button class="level-tab lv3" data-level="3"><span class="lv-emoji">🍀</span>HSK 3</button>
+        <button class="level-tab lv4" data-level="4"><span class="lv-emoji">🌳</span>HSK 4</button>
+        <button class="level-tab lv5" data-level="5"><span class="lv-emoji">🔥</span>HSK 5</button>
+        <button class="level-tab lv6" data-level="6"><span class="lv-emoji">🏆</span>HSK 6</button>
+      </div>
+    </section>
+
+    <section class="practice-card">
+      <div class="card-top">
+        <span class="progress-label">Câu <span id="currentIndex">1</span> / <span id="totalCount">10</span></span>
+        <div class="speed-control">
+          <label for="speedRange">🐢 Tốc độ 🐇</label>
+          <input type="range" id="speedRange" min="0.5" max="1.2" step="0.1" value="0.9">
+          <span id="speedValue">0.9x</span>
+        </div>
+      </div>
+
+      <div class="audio-controls">
+        <button id="playBtn" class="btn btn-play" title="Nghe câu">
+          <svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button id="replayBtn" class="btn btn-icon" title="Nghe lại">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+        </button>
+        <span class="play-count" id="playCount">Đã nghe 0 lần</span>
+        <span class="voice-warning" id="voiceWarning" hidden>⚠ Trình duyệt chưa có giọng đọc tiếng Trung. Hãy thử Chrome hoặc Edge.</span>
+      </div>
+
+      <div class="input-area">
+        <textarea id="userInput" rows="3" placeholder="在这里输入你听到的中文… (Gõ lại những gì bạn nghe được)" lang="zh"></textarea>
+      </div>
+
+      <div class="action-row">
+        <button id="checkBtn" class="btn btn-primary">✅ Kiểm tra</button>
+        <button id="hintBtn" class="btn btn-secondary">💡 Gợi ý</button>
+        <button id="pinyinBtn" class="btn btn-secondary">🔤 Xem Pinyin</button>
+        <button id="answerBtn" class="btn btn-secondary">👀 Xem đáp án</button>
+        <button id="nextBtn" class="btn btn-next">Câu tiếp theo →</button>
+      </div>
+
+      <div class="feedback" id="feedback" hidden>
+        <div class="feedback-diff" id="feedbackDiff"></div>
+        <div class="feedback-meta">
+          <span id="feedbackScore"></span>
+        </div>
+        <div class="feedback-pinyin" id="feedbackPinyin" hidden></div>
+        <div class="feedback-english" id="feedbackEnglish" hidden></div>
+      </div>
+
+      <div class="celebrate" id="celebrate" hidden>🎉 Xuất sắc! Chính xác 100%! 🎉</div>
+    </section>
+
+    <section class="legend">
+      <span class="legend-item"><i class="swatch correct"></i> Đúng</span>
+      <span class="legend-item"><i class="swatch wrong"></i> Sai</span>
+      <span class="legend-item"><i class="swatch missing"></i> Thiếu</span>
+      <span class="legend-item"><i class="swatch extra"></i> Thừa</span>
+    </section>
+
+    <section class="shortcuts">
+      ⌨️ Mẹo: nhấn <kbd>Ctrl</kbd> + <kbd>Enter</kbd> trong ô nhập để kiểm tra nhanh
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Luyện nghe &amp; gõ tiếng Trung. Âm thanh được tạo ngay trên trình duyệt của bạn (Web Speech API) — không cần đăng ký, không cần API key.</p>
+  </footer>
+
+  <script src="data/sentences.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
